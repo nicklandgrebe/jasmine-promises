@@ -12,7 +12,7 @@ function patchDone (done) {
       if (arguments[0]) {
         arguments[0] = cleanError(coerceToError(arguments[0]));
       }
-      
+
       return doneFailDelegate.apply(this, arguments);
     };
   }
@@ -38,14 +38,9 @@ function patchJasmineFn (obj, slot, fnArgIndex) {
           if (returnValue && returnValue.then) {
             returnValue.then(() => {
               done();
+            }, () => {
+              done();
             });
-
-            if (returnValue.catch && done.fail) {
-              returnValue.catch(error => {
-                done.fail(error);
-              });
-            }
-
           } else {
             done();
           }
@@ -56,7 +51,7 @@ function patchJasmineFn (obj, slot, fnArgIndex) {
 
       return returnValue;
     };
-    
+
     return delegate.apply(this, args);
   });
 }
@@ -74,7 +69,7 @@ function patchEnv (env) {
   targets.forEach(target => {
     patchJasmineFn(env, target.slot, target.fnArgIndex);
   });
-} 
+}
 
 function patchEnvCtor (obj, slot) {
   patchFn(obj, slot, function (delegate, args) {
